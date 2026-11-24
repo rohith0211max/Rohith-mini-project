@@ -687,6 +687,56 @@
                             <label for="notes"><i class="fas fa-comment"></i> Additional Notes (Optional)</label>
                             <textarea id="notes" name="notes" rows="2" placeholder="Any special instructions for pickup"></textarea>
                         </div>
+                        <!-- GPS Stamped Photo -->
+                        <div class="form-group">
+                            <label for="pickupPhoto">
+                                <i class="fas fa-camera"></i> Pickup Photo with GPS Stamp
+                            </label>
+
+                            <p style="color:#aaa; margin-bottom:10px;">
+                            Detect your location first. GPS, date and time
+                            will be printed directly on your photo.
+                            </p>
+
+                        <input
+                            type="file"
+                            id="pickupPhoto"
+                            accept="image/*"
+                            capture="environment"
+                            required
+                        >
+
+                        <img
+                            id="stampedPhotoPreview"
+                            style="display:none; width:100%; max-height:300px;
+                            object-fit:contain; margin-top:10px; border-radius:10px;"
+                            alt="GPS stamped photo preview"
+                        >
+
+                    <small id="photoStatus" style="color:#00f2ff;"></small>
+                </div>
+
+<!-- Optional Video -->
+<div class="form-group">
+    <label for="pickupVideo">
+        <i class="fas fa-video"></i> Pickup Video (Optional)
+    </label>
+
+    <input
+        type="file"
+        id="pickupVideo"
+        accept="video/*"
+        capture="environment"
+    >
+
+    <video
+        id="pickupVideoPreview"
+        controls
+        playsinline
+        style="display:none; width:100%; max-height:300px;
+        margin-top:10px; border-radius:10px;"
+    ></video>
+</div>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-calendar-check"></i> Confirm Pickup
                         </button>
@@ -796,8 +846,162 @@
             totalElement.textContent = `₹${(subtotal + 200).toLocaleString()}`;
         }
 
+        // GPS stamped photo and video handling
+
+let stampedPhotoDataUrl = '';
+let selectedVideoFile = null;
+
+const photoInput = document.getElementById('pickupPhoto');
+const photoPreview = document.getElementById('stampedPhotoPreview');
+const photoStatus = document.getElementById('photoStatus');
+
+photoInput.addEventListener('change', function () {
+
+    const file = this.files[0];
+
+    if (!file) return;
+
+    const latitude = document.getElementById('latitude').value;
+    const longitude = document.getElementById('longitude').value;
+
+    // GPS must be detected first
+    if (!latitude || !longitude) {
+        alert('Please detect your GPS location first!');
+
+        this.value = '';
+        return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image.');
+        this.value = '';
+        return;
+    }
+
+    photoStatus.textContent = 'Adding GPS stamp...';
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+
+        const image = new Image();
+
+        image.onload = function () {
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = image.naturalWidth;
+            canvas.height = image.naturalHeight;
+
+            // Draw original photo
+            ctx.drawImage(image, 0, 0);
+
+            // GPS and date/time information
+            const now = new Date();
+
+            const stampLines = [
+                'GPS: ' + Number(latitude).toFixed(6) +
+                ', ' + Number(longitude).toFixed(6),
+
+                'Date: ' + now.toLocaleDateString('en-IN'),
+
+                'Time: ' + now.toLocaleTimeString('en-IN')
+            ];
+
+            const fontSize = Math.max(18, canvas.width * 0.025);
+            const padding = fontSize;
+            const lineHeight = fontSize * 1.5;
+
+            const boxHeight =
+                padding * 2 + lineHeight * stampLines.length;
+
+            // Dark background for readable stamp
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+
+            ctx.fillRect(
+                0,
+                canvas.height - boxHeight,
+                canvas.width,
+                boxHeight
+            );
+
+            // Write GPS, date and time
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold ' + fontSize + 'px Arial';
+            ctx.textBaseline = 'top';
+
+            stampLines.forEach(function (line, index) {
+
+                ctx.fillText(
+                    line,
+                    padding,
+                    canvas.height - boxHeight +
+                    padding + index * lineHeight
+                );
+
+            });
+
+            // Convert stamped photo into JPEG
+            stampedPhotoDataUrl = canvas.toDataURL(
+                'image/jpeg',
+                0.90
+            );
+
+            // Show preview
+            photoPreview.src = stampedPhotoDataUrl;
+            photoPreview.style.display = 'block';
+
+            photoStatus.textContent =
+                'GPS, date and time successfully stamped! ✔';
+        };
+
+        image.onerror = function () {
+            photoStatus.textContent =
+                'Unable to process image. Please try another photo.';
+        };
+
+        image.src = event.target.result;
+    };
+
+    reader.readAsDataURL(file);
+});
+
+
+// Optional video preview
+
+document.getElementById('pickupVideo')
+.addEventListener('change', function () {
+
+    const file = this.files[0];
+    const videoPreview =
+        document.getElementById('pickupVideoPreview');
+
+    selectedVideoFile = file || null;
+
+    if (!file) {
+        videoPreview.style.display = 'none';
+        videoPreview.removeAttribute('src');
+        return;
+    }
+
+    if (!file.type.startsWith('video/')) {
+        alert('Please select a valid video.');
+        this.value = '';
+        selectedVideoFile = null;
+        return;
+    }
+
+    videoPreview.src = URL.createObjectURL(file);
+    videoPreview.style.display = 'block';
+});
+
         document.getElementById('pickupForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            if (!stampedPhotoDataUrl) {
+                alert('Please detect your location and upload a GPS-stamped photo.');
+            return;
+}
             
             const formData = {
                 name: document.getElementById('name').value,
@@ -809,7 +1013,11 @@
                 notes: document.getElementById('notes').value,
                 items: cart,
                 subtotal: document.getElementById('subtotal').textContent,
-                total: document.getElementById('total').textContent
+                total: document.getElementById('total').textContent,
+                latitude: document.getElementById('latitude').value,
+                longitude: document.getElementById('longitude').value,
+                stampedPhoto: stampedPhotoDataUrl,
+                video: selectedVideoFile
             };
 
             console.log('Pickup scheduled:', formData);
