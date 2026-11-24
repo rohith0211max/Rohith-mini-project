@@ -722,7 +722,27 @@
     </div>
 
     <script>
-        let cart = [];
+        // Load items saved from the marketplace
+    let cart = [];
+
+    try {
+        const savedCart = JSON.parse(
+            localStorage.getItem('eWasteCart') || '[]'
+        );
+
+        cart = Array.isArray(savedCart) ? savedCart : [];
+    } catch (error) {
+        console.error('Error loading cart:', error);
+        cart = [];
+    }
+
+    // Ensure numeric values are valid
+    cart = cart.map(item => ({
+        ...item,
+        price: Number(item.price) || 0,
+        quantity: Math.max(1, Number(item.quantity) || 1),
+        multiplier: Number(item.multiplier) || 1
+    }));
         const cartItemsContainer = document.getElementById('cart-items');
         const subtotalElement = document.getElementById('subtotal');
         const totalElement = document.getElementById('total');
