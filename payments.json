@@ -1,0 +1,8 @@
+{
+  "payments": [
+    { "method": "UPI", "details": "electrohub@upi" },
+    { "method": "Bank Transfer", "details": "A/C: 9876543210, IFSC: ABCD0123456" },
+    { "method": "Paytm/PhonePe", "details": "+91 98765 43210" },
+    { "method": "Cash on Pickup", "details": "Cash will be given at pickup" }
+  ]
+}

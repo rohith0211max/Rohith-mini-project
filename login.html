@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Electro_HUB</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1729 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated Electric Background */
+    .electric-bg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    /* Lightning Bolts */
+    .lightning {
+      position: absolute;
+      width: 4px;
+      height: 200px;
+      background: linear-gradient(180deg, transparent, #00f2ff, #fff, #00f2ff, transparent);
+      box-shadow: 0 0 30px #00f2ff, 0 0 60px #00f2ff, 0 0 90px #00f2ff;
+      animation: lightning 4s ease-in-out infinite;
+      opacity: 0;
+      filter: blur(1px);
+    }
+
+    .lightning:nth-child(1) { left: 15%; animation-delay: 0s; }
+    .lightning:nth-child(2) { left: 45%; animation-delay: 2s; }
+    .lightning:nth-child(3) { left: 75%; animation-delay: 3.5s; }
+    .lightning:nth-child(4) { left: 60%; animation-delay: 1.5s; }
+
+    @keyframes lightning {
+      0%, 90%, 100% { opacity: 0; transform: translateY(-200px) scaleY(0); }
+      92% { opacity: 1; transform: translateY(0) scaleY(1); }
+      94% { opacity: 0; }
+      95% { opacity: 0.8; }
+      96% { opacity: 0; }
+      97% { opacity: 1; }
+      98% { opacity: 0; }
+    }
+
+    /* Diagonal Lightning Strikes */
+    .diagonal-lightning {
+      position: absolute;
+      width: 3px;
+      height: 250px;
+      background: linear-gradient(180deg, transparent, #00f2ff, #ffffff, #00f2ff, transparent);
+      box-shadow: 0 0 40px #00f2ff, 0 0 80px #00f2ff;
+      opacity: 0;
+      animation: diagonalStrike 5s ease-in-out infinite;
+      transform-origin: top;
+    }
+
+    .diagonal-lightning:nth-child(19) { 
+      left: 25%; 
+      top: 0;
+      animation-delay: 1s; 
+      transform: rotate(25deg);
+    }
+    .diagonal-lightning:nth-child(20) { 
+      right: 30%; 
+      top: 0;
+      animation-delay: 3s; 
+      transform: rotate(-20deg);
+    }
+    .diagonal-lightning:nth-child(21) { 
+      left: 50%; 
+      top: 0;
+      animation-delay: 4.5s; 
+      transform: rotate(15deg);
+    }
+
+    @keyframes diagonalStrike {
+      0%, 88%, 100% { opacity: 0; transform: scaleY(0) rotate(var(--rotation, 0deg)); }
+      90% { opacity: 1; transform: scaleY(1) rotate(var(--rotation, 0deg)); }
+      92% { opacity: 0; }
+      94% { opacity: 0.9; }
+      96% { opacity: 0; }
+    }
+
+    /* Horizontal Lightning Flash */
+    .horizontal-lightning {
+      position: absolute;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #00f2ff, #ffffff, #00f2ff, transparent);
+      box-shadow: 0 0 30px #00f2ff, 0 0 60px #00f2ff;
+      opacity: 0;
+      animation: horizontalFlash 6s ease-in-out infinite;
+    }
+
+    .horizontal-lightning:nth-child(22) { top: 25%; animation-delay: 2.5s; }
+    .horizontal-lightning:nth-child(23) { top: 65%; animation-delay: 5s; }
+
+    @keyframes horizontalFlash {
+      0%, 94%, 100% { opacity: 0; transform: scaleX(0); }
+      95% { opacity: 1; transform: scaleX(1); }
+      96% { opacity: 0; }
+      97% { opacity: 0.8; }
+      98% { opacity: 0; }
+    }
+
+    /* Lightning Branches */
+    .lightning-branch {
+      position: absolute;
+      width: 2px;
+      height: 100px;
+      background: linear-gradient(180deg, #00f2ff, transparent);
+      box-shadow: 0 0 20px #00f2ff;
+      opacity: 0;
+      animation: branchStrike 4s ease-in-out infinite;
+    }
+
+    .lightning-branch:nth-child(24) { 
+      left: 20%; 
+      top: 30%;
+      animation-delay: 0.1s;
+      transform: rotate(45deg);
+    }
+    .lightning-branch:nth-child(25) { 
+      left: 22%; 
+      top: 30%;
+      animation-delay: 0.1s;
+      transform: rotate(-30deg);
+    }
+    .lightning-branch:nth-child(26) { 
+      right: 25%; 
+      top: 50%;
+      animation-delay: 2.1s;
+      transform: rotate(-45deg);
+    }
+    .lightning-branch:nth-child(27) { 
+      right: 27%; 
+      top: 50%;
+      animation-delay: 2.1s;
+      transform: rotate(30deg);
+    }
+
+    @keyframes branchStrike {
+      0%, 90%, 100% { opacity: 0; transform: scale(0) rotate(var(--branch-rotate, 0deg)); }
+      92% { opacity: 1; transform: scale(1) rotate(var(--branch-rotate, 0deg)); }
+      94% { opacity: 0; }
+    }
+
+    /* Electric Flash Overlay */
+    .flash-overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(0, 242, 255, 0.3) 0%, transparent 70%);
+      opacity: 0;
+      animation: flashScreen 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes flashScreen {
+      0%, 100% { opacity: 0; }
+      49%, 51% { opacity: 0; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Electric Arcs */
+    .electric-arc {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border: 3px solid transparent;
+      border-radius: 50%;
+      border-top-color: #00f2ff;
+      border-right-color: #00f2ff;
+      animation: rotate 3s linear infinite;
+      opacity: 0.4;
+      filter: blur(2px);
+    }
+
+    .electric-arc:nth-child(5) { 
+      top: 10%; 
+      left: 10%; 
+      animation-duration: 4s;
+      box-shadow: 0 0 30px #00f2ff;
+    }
+    .electric-arc:nth-child(6) { 
+      bottom: 10%; 
+      right: 10%; 
+      animation-duration: 5s; 
+      animation-direction: reverse;
+      box-shadow: 0 0 30px #0099ff;
+    }
+    .electric-arc:nth-child(7) { 
+      top: 50%; 
+      right: 5%; 
+      width: 150px;
+      height: 150px;
+      animation-duration: 3.5s;
+      box-shadow: 0 0 30px #00ffff;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Plasma Orbs */
+    .plasma-orb {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #00f2ff 0%, transparent 70%);
+      opacity: 0.3;
+      animation: pulse 3s ease-in-out infinite;
+      filter: blur(20px);
+    }
+
+    .plasma-orb:nth-child(8) { top: 20%; left: 20%; animation-delay: 0s; }
+    .plasma-orb:nth-child(9) { bottom: 20%; right: 20%; animation-delay: 1.5s; }
+    .plasma-orb:nth-child(10) { top: 60%; left: 10%; animation-delay: 1s; }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.2; }
+      50% { transform: scale(1.5); opacity: 0.4; }
+    }
+
+    /* Electric Grid */
+    .electric-grid {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 242, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 242, 255, 0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+      opacity: 0.3;
+    }
+
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    /* Energy Waves */
+    .energy-wave {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border: 2px solid #00f2ff;
+      border-radius: 50%;
+      opacity: 0;
+      animation: waveExpand 4s ease-out infinite;
+    }
+
+    .energy-wave:nth-child(12) { 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%);
+      animation-delay: 0s;
+    }
+    .energy-wave:nth-child(13) { 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%);
+      animation-delay: 2s;
+    }
+
+    @keyframes waveExpand {
+      0% { 
+        transform: translate(-50%, -50%) scale(0.1);
+        opacity: 1;
+      }
+      100% { 
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+      }
+    }
+
+    /* Floating Particles with Electric Trail */
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #00f2ff;
+      border-radius: 50%;
+      box-shadow: 0 0 15px #00f2ff, 0 0 30px #00f2ff;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .particle:nth-child(14) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(15) { left: 30%; animation-delay: 2s; }
+    .particle:nth-child(16) { left: 50%; animation-delay: 4s; }
+    .particle:nth-child(17) { left: 70%; animation-delay: 1s; }
+    .particle:nth-child(18) { left: 90%; animation-delay: 3s; }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+      10% { opacity: 1; }
+      50% { transform: translateY(50vh) translateX(30px); }
+      90% { opacity: 1; }
+      100% { transform: translateY(-20vh) translateX(-30px); opacity: 0; }
+    }
+
+    /* Main Container */
+    .auth-container {
+      position: relative;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(0, 242, 255, 0.3);
+      border-radius: 20px;
+      padding: 50px 40px;
+      width: 450px;
+      max-width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 242, 255, 0.2),
+                  inset 0 0 40px rgba(0, 242, 255, 0.05);
+      animation: containerGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes containerGlow {
+      0% { box-shadow: 0 20px 60px rgba(0, 242, 255, 0.2), inset 0 0 40px rgba(0, 242, 255, 0.05); }
+      100% { box-shadow: 0 20px 80px rgba(0, 242, 255, 0.4), inset 0 0 60px rgba(0, 242, 255, 0.1); }
+    }
+
+    .auth-container h2 {
+      color: #00f2ff;
+      text-align: center;
+      margin-bottom: 35px;
+      font-size: 32px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-shadow: 0 0 20px rgba(0, 242, 255, 0.8),
+                   0 0 40px rgba(0, 242, 255, 0.5);
+      animation: titlePulse 3s ease-in-out infinite;
+    }
+
+    @keyframes titlePulse {
+      0%, 100% { text-shadow: 0 0 20px rgba(0, 242, 255, 0.8), 0 0 40px rgba(0, 242, 255, 0.5); }
+      50% { text-shadow: 0 0 30px rgba(0, 242, 255, 1), 0 0 60px rgba(0, 242, 255, 0.8); }
+    }
+
+    #login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .input-group {
+      position: relative;
+      animation: slideIn 0.6s ease-out backwards;
+    }
+
+    .input-group:nth-child(1) { animation-delay: 0.1s; }
+    .input-group:nth-child(2) { animation-delay: 0.2s; }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 10px;
+      color: #00f2ff;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(0, 242, 255, 0.3);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .input-group input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .input-group input:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: #00f2ff;
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .cta-button {
+      margin-top: 15px;
+      padding: 18px;
+      background: linear-gradient(135deg, #00f2ff 0%, #0099ff 100%);
+      border: none;
+      border-radius: 12px;
+      color: #0a0e27;
+      font-size: 18px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 5px 25px rgba(0, 242, 255, 0.4);
+      animation: slideIn 0.6s ease-out 0.3s backwards;
+    }
+
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .cta-button:hover::before {
+      width: 400px;
+      height: 400px;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 35px rgba(0, 242, 255, 0.6);
+    }
+
+    .cta-button:active {
+      transform: translateY(-1px);
+    }
+
+    .auth-container p {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 25px;
+      font-size: 15px;
+      animation: slideIn 0.6s ease-out 0.4s backwards;
+    }
+
+    .auth-container a {
+      color: #00f2ff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .auth-container a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #00f2ff;
+      transition: width 0.3s ease;
+    }
+
+    .auth-container a:hover {
+      color: #00ffff;
+      text-shadow: 0 0 10px rgba(0, 242, 255, 0.8);
+    }
+
+    .auth-container a:hover::after {
+      width: 100%;
+    }
+
+    /* Electric Bolt Icon */
+    .bolt-icon {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 50px;
+      color: #00f2ff;
+      text-shadow: 0 0 30px rgba(0, 242, 255, 0.8);
+      animation: boltBounce 2s ease-in-out infinite;
+    }
+
+    @keyframes boltBounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-10px); }
+    }
+
+    /* Forgot Password Link */
+    .forgot-password {
+      text-align: right;
+      margin-top: -15px;
+      margin-bottom: 10px;
+    }
+
+    .forgot-password a {
+      color: rgba(0, 242, 255, 0.8);
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .forgot-password a:hover {
+      color: #00f2ff;
+      text-shadow: 0 0 10px rgba(0, 242, 255, 0.6);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .auth-container {
+        padding: 40px 30px;
+      }
+      
+      .auth-container h2 {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="electric-bg">
+    <!-- Lightning Bolts -->
+    <div class="lightning"></div>
+    <div class="lightning"></div>
+    <div class="lightning"></div>
+    <div class="lightning"></div>
+    
+    <!-- Electric Arcs -->
+    <div class="electric-arc"></div>
+    <div class="electric-arc"></div>
+    <div class="electric-arc"></div>
+    
+    <!-- Plasma Orbs -->
+    <div class="plasma-orb"></div>
+    <div class="plasma-orb"></div>
+    <div class="plasma-orb"></div>
+    
+    <!-- Electric Grid -->
+    <div class="electric-grid"></div>
+    
+    <!-- Energy Waves -->
+    <div class="energy-wave"></div>
+    <div class="energy-wave"></div>
+    
+    <!-- Electric Particles -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="auth-container">
+    <i class="fas fa-bolt bolt-icon"></i>
+    <h2>Electro_HUB</h2>
+    <form id="login-form">
+      <div class="input-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="Enter your email" required>
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required>
+      </div>
+      <div class="forgot-password">
+        <a href="#">Forgot Password?</a>
+      </div>
+      <button type="submit" class="cta-button">Login</button>
+      <p>Don't have an account? <a href="register.html">Register here</a></p>
+    </form>
+  </div>
+
+  <script src="script.js"></script>
+
+  <!--Start of Tawk.to Script-->
+  <script type="text/javascript">
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+  s1.async=true;
+  s1.src='https://embed.tawk.to/68f1654dc65081194dc355cf/1j7nf7e43';
+  s1.charset='UTF-8';
+  s1.setAttribute('crossorigin','*');
+  s0.parentNode.insertBefore(s1,s0);
+  })();
+  </script>
+  <!--End of Tawk.to Script-->
+</body>
+</html>
